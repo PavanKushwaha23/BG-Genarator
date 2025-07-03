@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Gradient Background Generator</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --color-1: #6e45e2;
+            --color-2: #89d4cf;
+            --angle: 135deg;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .gradient-preview {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(var(--angle), var(--color-1), var(--color-2));
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .color-picker {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 50px;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .color-picker::-webkit-color-swatch {
+            border-radius: 0.5rem;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .angle-picker {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: linear-gradient(to right, #6e45e2, #89d4cf);
+        }
+
+        .angle-picker::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .code-block {
+            font-family: 'JetBrains Mono', monospace;
+            background: #1e293b;
+            color: #f8fafc;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #f8fafc;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        @media (min-width: 768px) {
+            .gradient-preview {
+                height: 400px;
+            }
+
+            .controls-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body class="container mx-auto px-4 py-8">
+    <header class="mb-8 text-center">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Modern Gradient Generator</h1>
+        <p class="text-gray-X600 max-w-lg mx-auto">Create beautiful CSS gradient backgrounds with this easy-to-use tool</p>
+    </header>
+
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div class="gradient-preview mb-8"></div>
+
+        <div class="controls-grid">
+            <div class="mb-4">
+                <label for="color1" class="block text-sm font-medium text-gray-700 mb-2">First Color</label>
+                <input type="color" id="color1" class="color-picker" value="#6e45e2" />
+            </div>
+
+            <div class="mb-4">
+                <label for="color2" class="block text-sm font-medium text-gray-700 mb-2">Second Color</label>
+                <input type="color" id="color2" class="color-picker" value="#89d4cf" />
+            </div>
+
+            <div class="mb-4">
+                <label for="angle" class="block text-sm font-medium text-gray-700 mb-2">Gradient Angle</label>
+                <input type="range" id="angle" class="angle-picker" min="0" max="360" value="135" />
+                <div class="flex justify-between mt-1">
+                    <span class="text-xs text-gray-500">0°</span>
+                    <span class="text-xs text-gray-500">360°</span>
+                </div>
+            </div>
+
+            <div class="mb-4 flex items-end">
+                <button id="random-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-colors w-full">
+                    Random Gradient
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">CSS Code</h2>
+        <div class="code-block mb-4">
+            <button id="copy-btn" class="copy-btn">Copy</button>
+            <code id="css-code">background: linear-gradient(135deg, #6e45e2, #89d4cf);</code>
+        </div>
+        <p class="text-sm text-gray-600">Click the copy button above to use this gradient in your project</p>
+    </div>
+
+    
+
+    <script>
+        const color1 = document.getElementById('color1');
+        const color2 = document.getElementById('color2');
+        const angle = document.getElementById('angle');
+        const randomBtn = document.getElementById('random-btn');
+        const copyBtn = document.getElementById('copy-btn');
+        const cssCode = document.getElementById('css-code');
+        const gradientPreview = document.querySelector('.gradient-preview');
+
+        function updateGradient() {
+            const gradientValue = `linear-gradient(${angle.value}deg, ${color1.value}, ${color2.value})`;
+            gradientPreview.style.background = gradientValue;
+            cssCode.textContent = `background: ${gradientValue};`;
+            document.documentElement.style.setProperty('--color-1', color1.value);
+            document.documentElement.style.setProperty('--color-2', color2.value);
+            document.documentElement.style.setProperty('--angle', `${angle.value}deg`);
+        }
+
+        function getRandomColor() {
+            return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+        }
+
+        function setRandomGradient() {
+            color1.value = getRandomColor();
+            color2.value = getRandomColor();
+            angle.value = Math.floor(Math.random() * 361);
+            updateGradient();
+        }
+
+        color1.addEventListener('input', updateGradient);
+        color2.addEventListener('input', updateGradient);
+        angle.addEventListener('input', updateGradient);
+        randomBtn.addEventListener('click', setRandomGradient);
+
+        copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(cssCode.textContent).then(() => {
+                copyBtn.textContent = 'Copied!';
+                setTimeout(() => {
+                    copyBtn.textContent = 'Copy';
+                }, 2000);
+            });
+        });
+
+        // Initialize
+        updateGradient();
+    </script>
+</body>
+</html>
+
